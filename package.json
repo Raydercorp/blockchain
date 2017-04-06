@@ -1,0 +1,19 @@
+{
+  "name": "blockchain",
+  "version": "0.0.1",
+  "description": "Simple blockchain",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "start": "node blockchain"
+  },
+  "dependencies": {
+    "body-parser": "latest",
+    "crypto-js": "latest",
+    "express": "latest",
+    "ws": "latest"
+  },
+  "engines": {
+    "node": ">=4.3.2"
+  }
+}
