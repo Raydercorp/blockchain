@@ -34,7 +34,9 @@ initHttpServer = () => {
     var app = express();
     app.use(bodyParser.json());
 
-    app.get('/blocks', (req, res) => res.send(formatBlockchain(JSON.stringify(blockchain))));
+    app.get('/blocks', (req, res) => res.send(JSON.stringify(blockchain, null, 2)));
+
+    app.get('/blocksHttp', (req, res) => res.send('<pre>' + JSON.stringify(blockchain, null, 2) + '</pre>'));
 
     app.post('/mineBlock', (req, res) => {
         var newBlock = generateNextBlock(req.body.data);
@@ -54,18 +56,6 @@ initHttpServer = () => {
     });
 
     app.listen(http_port, () => console.log('Listening http on port: ' + http_port));
-};
-
-formatBlockchain = (blockchain) => {
-    return blockchain.split("[{").join("[\n  {")
-                     .split("\"index\":").join("\n    \"index\":")
-                     .split("\"previousHash\":").join("\n    \"previousHash\":")
-                     .split("\"timestamp\":").join("\n    \"timestamp\":")
-                     .split("\"data\":").join("\n    \"data\":")
-                     .split("\"hash\":").join("\n    \"hash\":")
-                     .split("},").join("\n  },")
-                     .split(",{").join(",\n  {")
-                     .split("}]").join("\n  }\n]");
 };
 
 initP2PServer = () => {
