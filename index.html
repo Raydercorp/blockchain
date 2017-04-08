@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Raydercorp</title>
+
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+		<link rel="stylesheet" href="style/style.css">
+	</head>
+
+	<body>
+		<div class="container-fluid">
+			<!-- Nav tabs -->
+			<ul class="nav nav-tabs nav-justified">
+				<li class="active"><a data-toggle="tab" href="#blockchain">Blockchain</a></li>
+				<li><a data-toggle="tab" href="#peers">Peers</a></li>
+				<li><a data-toggle="tab" href="#addBlock">Add Block</a></li>
+				<li><a data-toggle="tab" href="#addPeer">Add Peer</a></li>
+			</ul>
+
+			<!-- Tab panes -->
+			<div class="tab-content">
+				<div class="tab-pane active" id="blockchain">
+					<pre id="blocks"></pre>
+				</div>
+				<div class="tab-pane" id="peers">
+					<pre id="peer"></pre>
+				</div>
+				<div class="tab-pane" id="addBlock">Add Block</div>
+				<div class="tab-pane" id="addPeer">Add Peer</div>
+			</div>
+		</div>
+	</body>
+
+	<script src="node_modules/jquery/dist/jquery.min.js"></script>
+	<script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+
+	<script type="text/javascript">
+		$(document).ready(function(){
+			// Initial load
+			CallURL('/blocks', 'blocks');
+			CallURL('/peers', 'peer');
+
+			setInterval(() => {
+				CallURL('/blocks', 'blocks');
+			}, 5000);
+
+			setInterval(() => {
+				CallURL('/peers', 'peer');
+			}, 5000);
+		});
+
+		function CallURL(url, elementID)  {
+		    $.getJSON(url, function(data) {
+		    	document.getElementById(elementID).innerHTML = JSON.stringify(data, null, 2);
+		    });
+		}
+	</script>
+</html>

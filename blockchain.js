@@ -2,6 +2,7 @@ var CryptoJS = require("crypto-js");
 var express = require("express");
 var bodyParser = require('body-parser');
 var WebSocket = require("ws");
+var path = require('path');
 
 var http_port = process.env.HTTP_PORT || 3001;
 var p2p_port = process.env.P2P_PORT || 6001;
@@ -24,6 +25,13 @@ class Block {
     }
 }
 
+class Peer {
+	constructor(ip, port) {
+		this.ip = ip;
+		this.port = port;
+	}
+}
+
 getInitialBlock = () => {
     return new Block(0, "", 1491503516.539, "Initial", "39b9bf27837a51090711a64537593e075ba5ae7d34b1d7c421ec23a53bf74768");
 };
@@ -33,10 +41,10 @@ var blockchain = [getInitialBlock()];
 initHttpServer = () => {
     var app = express();
     app.use(bodyParser.json());
+    app.use('/node_modules', express.static(__dirname + "/node_modules"));
+    app.use('/style', express.static(__dirname + "/style"));
 
-    app.get('/blocks', (req, res) => res.send(JSON.stringify(blockchain, null, 2)));
-
-    app.get('/blocksHttp', (req, res) => res.send('<pre>' + JSON.stringify(blockchain, null, 2) + '</pre>'));
+    app.get('/blocks', (req, res) => res.send(JSON.stringify(blockchain)));
 
     app.post('/mineBlock', (req, res) => {
         var newBlock = generateNextBlock(req.body.data);
@@ -47,12 +55,19 @@ initHttpServer = () => {
     });
 
     app.get('/peers', (req, res) => {
-        res.send(sockets.map(s => s._socket.remoteAddress + ':' + s._socket.remotePort));
+    	var peers = [];
+    	sockets.forEach(socket => peers.push(new Peer(socket._socket.remoteAddress, socket._socket.remotePort)));
+
+        res.send(JSON.stringify(peers));
     });
 
     app.post('/addPeer', (req, res) => {
         connectToPeers([req.body.peer]);
         res.send();
+    });
+
+    app.get('/', (req, res, next) => {
+        res.sendFile(path.join(__dirname, 'index.html'));
     });
 
     app.listen(http_port, () => console.log('Listening http on port: ' + http_port));

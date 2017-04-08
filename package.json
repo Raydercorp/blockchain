@@ -9,8 +9,10 @@
   },
   "dependencies": {
     "body-parser": "latest",
+    "bootstrap": "latest",
     "crypto-js": "latest",
     "express": "latest",
+    "jquery": "latest",
     "ws": "latest"
   },
   "engines": {
