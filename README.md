@@ -11,5 +11,5 @@ HTTP_PORT=3002 P2P_PORT=6002 npm start
 // With Peer
 HTTP_PORT=3002 P2P_PORT=6002 PEERS=ws://localhost:6001 npm start
 
-// The rest can be done under localhost:3001
+// The rest can be done under localhost:3001, localhost:3002 and so on
 ```
