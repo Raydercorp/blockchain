@@ -33,8 +33,6 @@
 				</div>
 				<div class="tab-pane" id="addBlock">
 					<form id="addBlockForm">
-						Port:<br>
-						<input type="number" name="port"><br>
 						Data:<br>
 						<input type="text" name="data"><br>
 						<input type="button" name="submit" value="Add Block" onclick="addBlock()">
@@ -42,8 +40,6 @@
 				</div>
 				<div class="tab-pane" id="addPeer">
 					<form id="addPeerForm">
-						HTTP Port:<br>
-						<input type="number" name="httpPort"><br>
 						PEER Port:<br>
 						<input type="text" name="peerPort"><br>
 						<input type="button" name="submit" value="Add Peer" onclick="addPeer()">
@@ -86,13 +82,8 @@
 			var form = $("#addBlockForm");
 			var blockData = form.serializeArray();
 
-			if(blockData[0]["value"] === "")
-			{
-				return;
-			}
-
-			var url = "http://localhost:" + blockData[0]["value"] + "/mineBlock";
-			var data = blockData[1]["value"];
+			var url = 'http://' + window.location.host + '/mineBlock';
+			var data = blockData[0]["value"];
 			
 			$.ajax({
 				url: url,
@@ -107,13 +98,13 @@
 			var form = $("#addPeerForm");
 			var peerData = form.serializeArray();
 
-			if(peerData[0]["value"] === "" || peerData[1]["value"] === "")
+			if(peerData[0]["value"] === "")
 			{
 				return;
 			}
 
-			var url = "http://localhost:" + peerData[0]["value"] + "/addPeer";
-			var peer = "ws://localhost:" + peerData[1]["value"];
+			var url = 'http://' + window.location.host + "/addPeer";
+			var peer = "ws://localhost:" + peerData[0]["value"];
 			
 			$.ajax({
 				url: url,
