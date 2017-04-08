@@ -31,8 +31,24 @@
 					Outgoing Peers:
 					<pre id="outgoingPeers"></pre>
 				</div>
-				<div class="tab-pane" id="addBlock">Add Block</div>
-				<div class="tab-pane" id="addPeer">Add Peer</div>
+				<div class="tab-pane" id="addBlock">
+					<form id="addBlockForm">
+						Port:<br>
+						<input type="number" name="port"><br>
+						Data:<br>
+						<input type="text" name="data"><br>
+						<input type="button" name="submit" value="Add Block" onclick="addBlock()">
+					</form>
+				</div>
+				<div class="tab-pane" id="addPeer">
+					<form id="addPeerForm">
+						HTTP Port:<br>
+						<input type="number" name="httpPort"><br>
+						PEER Port:<br>
+						<input type="text" name="peerPort"><br>
+						<input type="button" name="submit" value="Add Peer" onclick="addPeer()">
+					</form>
+				</div>
 			</div>
 		</div>
 	</body>
@@ -43,27 +59,69 @@
 	<script type="text/javascript">
 		$(document).ready(function(){
 			// Initial load
-			CallURL('/blocks', 'blocks');
-			CallURL('/incomingPeers', 'incomingPeers');
-			CallURL('/outgoingPeers', 'outgoingPeers');
+			getJSONFromURL('/blocks', 'blocks');
+			getJSONFromURL('/incomingPeers', 'incomingPeers');
+			getJSONFromURL('/outgoingPeers', 'outgoingPeers');
 
 			setInterval(() => {
-				CallURL('/blocks', 'blocks');
+				getJSONFromURL('/blocks', 'blocks');
 			}, 5000);
 
 			setInterval(() => {
-				CallURL('/incomingPeers', 'incomingPeers');
+				getJSONFromURL('/incomingPeers', 'incomingPeers');
 			}, 5000);
 
 			setInterval(() => {
-				CallURL('/outgoingPeers', 'outgoingPeers');
+				getJSONFromURL('/outgoingPeers', 'outgoingPeers');
 			}, 5000);
 		});
 
-		function CallURL(url, elementID)  {
+		getJSONFromURL = (url, elementID) => {
 		    $.getJSON(url, function(data) {
 		    	document.getElementById(elementID).innerHTML = JSON.stringify(data, null, 2);
 		    });
+		}
+
+		addBlock = () => {
+			var form = $("#addBlockForm");
+			var blockData = form.serializeArray();
+
+			if(blockData[0]["value"] === "")
+			{
+				return;
+			}
+
+			var url = "http://localhost:" + blockData[0]["value"] + "/mineBlock";
+			var data = blockData[1]["value"];
+			
+			$.ajax({
+				url: url,
+				type: 'POST',
+        		contentType: 'application/json',
+				data: JSON.stringify({"data": data}),
+				dataType: 'json'
+			});
+		}
+
+		addPeer = () => {
+			var form = $("#addPeerForm");
+			var peerData = form.serializeArray();
+
+			if(peerData[0]["value"] === "" || peerData[1]["value"] === "")
+			{
+				return;
+			}
+
+			var url = "http://localhost:" + peerData[0]["value"] + "/addPeer";
+			var peer = "ws://localhost:" + peerData[1]["value"];
+			
+			$.ajax({
+				url: url,
+				type: 'POST',
+        		contentType: 'application/json',
+				data: JSON.stringify({"peer": peer}),
+				dataType: 'json'
+			});
 		}
 	</script>
 </html>
