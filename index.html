@@ -26,7 +26,10 @@
 					<pre id="blocks"></pre>
 				</div>
 				<div class="tab-pane" id="peers">
-					<pre id="peer"></pre>
+					Incoming Peers:
+					<pre id="incomingPeers"></pre>
+					Outgoing Peers:
+					<pre id="outgoingPeers"></pre>
 				</div>
 				<div class="tab-pane" id="addBlock">Add Block</div>
 				<div class="tab-pane" id="addPeer">Add Peer</div>
@@ -41,14 +44,19 @@
 		$(document).ready(function(){
 			// Initial load
 			CallURL('/blocks', 'blocks');
-			CallURL('/peers', 'peer');
+			CallURL('/incomingPeers', 'incomingPeers');
+			CallURL('/outgoingPeers', 'outgoingPeers');
 
 			setInterval(() => {
 				CallURL('/blocks', 'blocks');
 			}, 5000);
 
 			setInterval(() => {
-				CallURL('/peers', 'peer');
+				CallURL('/incomingPeers', 'incomingPeers');
+			}, 5000);
+
+			setInterval(() => {
+				CallURL('/outgoingPeers', 'outgoingPeers');
 			}, 5000);
 		});
 

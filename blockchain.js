@@ -54,11 +54,30 @@ initHttpServer = () => {
         res.send();
     });
 
-    app.get('/peers', (req, res) => {
-    	var peers = [];
-    	sockets.forEach(socket => peers.push(new Peer(socket._socket.remoteAddress, socket._socket.remotePort)));
+    app.get('/incomingPeers', (req, res) => {
+    	var incomingPeers = [];
 
-        res.send(JSON.stringify(peers));
+    	sockets.forEach(socket => {
+    		if(socket._socket.remoteAddress.indexOf("::ffff") !== -1)
+	    	{
+	    		incomingPeers.push(new Peer(socket._socket.remoteAddress, socket._socket.remotePort));
+	    	}
+    	});
+
+        res.send(JSON.stringify(incomingPeers));
+    });
+
+    app.get('/outgoingPeers', (req, res) => {
+    	var outgoingPeers = [];
+
+    	sockets.forEach(socket => {
+    		if(socket._socket.remoteAddress.indexOf("::ffff") === -1)
+	    	{
+	    		outgoingPeers.push(new Peer(socket._socket.remoteAddress, socket._socket.remotePort));
+	    	}
+    	});
+
+        res.send(JSON.stringify(outgoingPeers));
     });
 
     app.post('/addPeer', (req, res) => {
@@ -153,11 +172,23 @@ isValidNewBlock = (newBlock, previousBlock) => {
 
 connectToPeers = (newPeers) => {
     newPeers.forEach((peer) => {
-        var ws = new WebSocket(peer);
-        ws.on('open', () => initConnection(ws));
-        ws.on('error', () => {
-            console.log('connection failed')
-        });
+    	var found = false;
+
+    	sockets.forEach(socket => {
+    		if(socket._socket.remotePort.toString() === peer.split('ws://localhost:').join(''))
+    		{
+    			found = true;
+    		}
+    	});
+
+    	if(!found)
+    	{
+		    var ws = new WebSocket(peer);
+			ws.on('open', () => initConnection(ws));
+			ws.on('error', () => {
+				console.log('connection failed')
+			});
+		}
     });
 };
 
@@ -179,7 +210,7 @@ handleBlockchainResponse = (message) => {
             replaceChain(receivedBlocks);
         }
     } else {
-        console.log('received blockchain is not longer than received blockchain. Do nothing');
+        console.log('received blockchain is not longer than current blockchain. Do nothing');
     }
 };
 
